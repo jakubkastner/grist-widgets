@@ -1,0 +1,6 @@
+[submodule "copy-image"]
+	path = copy-image
+	url = https://github.com/jakubkastner/grist-widget-copy-image/
+[submodule "map"]
+	path = map
+	url = https://github.com/jakubkastner/grist-widget-map
