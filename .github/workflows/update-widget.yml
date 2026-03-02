@@ -1,0 +1,39 @@
+name: Update Specific Widget Submodule
+
+on:
+  repository_dispatch:
+    types: [update-specific-widget]
+
+jobs:
+  update-widget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout central repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          submodules: true
+
+      - name: Force update specific widget
+        run: |
+          # Get widget name
+          WIDGET_DIR="${{ github.event.client_payload.widget_name }}"
+
+          echo "Updating widget: $WIDGET_DIR"
+
+          # 1. Download changes for widget
+          git submodule update --remote --force "$WIDGET_DIR"
+
+          # 2. Setup bot id
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          # 3. Add updated widget directory
+          git add "$WIDGET_DIR"
+
+          # 4. Commit and push
+          git commit -m "Auto-update: Updated widget $WIDGET_DIR to newest version from main branch" || echo "No changes to save"
+          git push
